@@ -52,7 +52,7 @@ This project demonstrates a language model-based question-answering system that 
 1. Run the `main.py` script:
 
    ```bash
-   python main.py
+   streamlit run main.py
    ```
 
 2. The system will load the CSV data and initialize the Gemini API-based question-answering pipeline. You can input natural language questions, and the system will respond with concise answers based on the data.
