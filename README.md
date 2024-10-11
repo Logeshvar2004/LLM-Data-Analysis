@@ -1,6 +1,3 @@
-Sure! Here’s a sample README file you can use for your Streamlit application that integrates LangChain and CSV analysis. You can modify it as needed to better fit your project's specifics.
-
-```markdown
 # Streamlit CSV Analysis App
 
 Welcome to the **Streamlit CSV Analysis App**! This application allows users to upload CSV files and ask questions about their data, utilizing a language model to generate insightful responses.
@@ -12,7 +9,7 @@ Welcome to the **Streamlit CSV Analysis App**! This application allows users to 
 - Receive default responses for common questions like "Hi" and "Who are you".
 - Chat interface for seamless interaction with the assistant.
 
-##Output:
+# Output:
 ![image](https://github.com/user-attachments/assets/b9fabd94-5455-440f-9177-ff588a7102f8)
 
 
