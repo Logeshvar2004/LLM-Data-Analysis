@@ -1,78 +1,91 @@
 import streamlit as st
-from langchain.prompts import PromptTemplate
-from langchain.chains.question_answering import load_qa_chain
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma  # Updated import
-from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_experimental.agents import create_csv_agent
 from dotenv import load_dotenv
-import os
-import pandas as pd
+import time
 
-st.title("Chat Your CSV")  # Updated title for CSV
+# Load environment variables
+load_dotenv()
 
-# Load environment variables from .env file
-load_dotenv(r"D:\Coding\python\LLM-Analysis\.env")
+# Custom CSS to fix the input box at the bottom, style it, and align the title at the top
+st.markdown("""
+    <style>
+    .stTextInput {
+        position: fixed;
+        bottom: 20px; /* Add some space from the bottom */
+        left: 50%; /* Center the input */
+        transform: translateX(-50%); /* Adjust for centering */
+        width: 70%; /* Set a width for the input box */
+        max-width: 600px; /* Max width for larger screens */
+    }
+    .chat-history {
+        max-height: 70vh; /* Limit height of the chat history */
+        overflow-y: auto; /* Enable scrolling for long chats */
+        padding-bottom: 80px; /* Give space for the input box */
+    }
+    h1 {
+        text-align: center; /* Center the title */
+        margin-top: 1px; /* Add some space above the title */
+        margin-bottom : 2px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-# Retrieve API key from environment variable
-google_api_key = os.getenv("GEMINI_API_KEY")
+# Title aligned to the top
+st.title("Data analysis Made easier...!")
 
-# Check if the API key is available
-if google_api_key is None:
-    st.warning("API key not found. Please set the google_api_key environment variable.")
-    st.stop()
+# Initialize session state for chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if 'history' not in st.session_state:
+    st.session_state['history'] = []
+if 'query' not in st.session_state:
+    st.session_state['query'] = ""  # Initialize query
 
-# File Upload with user-defined name
-uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
+# CSV file uploader without label
+uploaded_file = st.file_uploader("", type=["csv"])
 
 if uploaded_file is not None:
-    st.text("CSV File Uploaded Successfully!")
+    try:
+        # Use Langchain's create_csv_agent to load and process the CSV
+        llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0, max_tokens=None, timeout=None)
 
-    # CSV Processing (using pandas)
-    df = pd.read_csv(uploaded_file)
+        # Create the CSV agent and allow dangerous code execution (opt-in)
+        agent = create_csv_agent(llm, uploaded_file, verbose=True, allow_dangerous_code=True)
 
-    # Create Context from the DataFrame
-    context = df.to_string(index=False)
+        # Display chat messages from history on app rerun
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
 
-    # Split Texts
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=200)
-    texts = text_splitter.split_text(context)
+        # Accept user input
+        if prompt := st.chat_input("Ask a question about the CSV file:"):
+            # Add user message to chat history
+            st.session_state.messages.append({"role": "user", "content": prompt})
 
-    # Chroma Embeddings
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    vector_index = Chroma.from_texts(texts, embeddings).as_retriever()
+            # Display user message in chat message container
+            with st.chat_message("user"):
+                st.markdown(prompt)
 
-    # Get User Question
-    user_question = st.text_input("Ask a Question:")
+            # Process the user query with the CSV agent
+            response = agent.run(prompt)
 
-    if st.button("Get Answer"):
-        if user_question:
-            # Get Relevant Documents
-            docs = vector_index.get_relevant_documents(user_question)
+            # Display the assistant response in chat message container
+            with st.chat_message("assistant"):
+                st.markdown(response)  # Display the entire response at once
+                time.sleep(0.05)  # Simulate a slight delay for better UX
 
-            # Define Prompt Template
-            prompt_template = """
-            Answer the question as detailed as possible from the provided context,
-            make sure to provide all the details. If the answer is not in
-            the provided context, just say, "answer is not available in the context",
-            don't provide the wrong answer.\n\n
-            Context:\n {context}?\n
-            Question: \n{question}\n
-            Answer:
-            """
+            # Add assistant response to chat history
+            st.session_state.messages.append({"role": "assistant", "content": response})
 
-            # Create Prompt
-            prompt = PromptTemplate(template=prompt_template, input_variables=['context', 'question'])
+        # Display the chat history without header
+        with st.container():
+            st.markdown('<div class="chat-history">', unsafe_allow_html=True)
+            if st.session_state['history']:
+                for idx, (q, a) in enumerate(st.session_state['history']):
+                    st.markdown(f"**Q{idx+1}:** {q}")
+                    st.markdown(f"**A{idx+1}:** {a}")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-            # Load QA Chain
-            model = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.3, api_key=google_api_key)
-            chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
-
-            # Get Response
-            response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
-
-            # Display Answer
-            st.subheader("Answer:")
-            st.write(response['output_text'])
-
-        else:
-            st.warning("Please enter a question.")
+    except Exception as e:
+        st.error(f"Error processing the uploaded CSV file: {e}")
