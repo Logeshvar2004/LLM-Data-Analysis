@@ -1,81 +1,80 @@
-# LLM-Data-Analysis
-A LLM Specifically developed for data analysis using RAG.
+Sure! Here’s a sample README file you can use for your Streamlit application that integrates LangChain and CSV analysis. You can modify it as needed to better fit your project's specifics.
 
-This project demonstrates a language model-based question-answering system that utilizes the **Gemini API** to process CSV data, retrieve relevant information, and answer queries. The system is built using the **LangChain** framework, enabling seamless document loading, embedding generation, and retrieval-based question answering.
+```markdown
+# Streamlit CSV Analysis App
+
+Welcome to the **Streamlit CSV Analysis App**! This application allows users to upload CSV files and ask questions about their data, utilizing a language model to generate insightful responses.
 
 ## Features
 
-- **CSV Data Processing**: Load and process CSV files, making the data available for querying.
-- **Gemini API Integration**: Leverage the Gemini API for both language model generation and embedding queries.
-- **Vector Store for Efficient Retrieval**: Uses **FAISS** for indexing document embeddings and retrieving relevant context efficiently.
-- **Flexible Querying**: Provides answers to natural language questions based on the provided CSV data.
+- Upload a CSV file and interact with the data.
+- Ask questions about the uploaded CSV, such as total rows and columns, specific data queries, etc.
+- Receive default responses for common questions like "Hi" and "Who are you".
+- Chat interface for seamless interaction with the assistant.
 
-## Project Structure
+##Output:
+![image](https://github.com/user-attachments/assets/b9fabd94-5455-440f-9177-ff588a7102f8)
 
-- `main.py`: The core script to run the question-answering system.
-- `.env`: Environment variables file for securely storing API keys.
-- `data/`: Directory for CSV files that are loaded and processed by the system.
-- `requirements.txt`: Lists the required Python libraries for the project.
+
+## Requirements
+
+- Python 3.8 or higher
+- Streamlit
+- LangChain
+- dotenv
+- langchain_google_genai
 
 ## Installation
 
 1. Clone the repository:
-
    ```bash
-   git clone https://github.com/yourusername/gemini-qa-system.git
-   cd gemini-qa-system
+   git clone https://github.com/yourusername/repository-name.git
    ```
-
-2. Create a virtual environment and activate it:
-
+2. Navigate to the project directory:
    ```bash
-   python -m venv env
-   source env/bin/activate  # On Windows use: .\env\Scripts\activate
+   cd repository-name
    ```
-
-3. Install dependencies:
-
+3. Install the required packages:
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Set up the `.env` file in the root directory with your Gemini API key:
-
+4. Set up your environment variables by creating a `.env` file in the root directory:
+   ```plaintext
+   # Example .env file content
+   API_KEY=your_api_key_here
    ```
-   GEMINI_API_KEY=your_api_key_here
-   ```
-
-5. Place your CSV file in the `data/` directory.
 
 ## Usage
 
-1. Run the `main.py` script:
-
+1. Start the Streamlit app:
    ```bash
-   streamlit run main.py
+   streamlit run app.py
    ```
+2. Open your browser and go to `http://localhost:8501`.
+3. Upload your CSV file.
+4. Interact with the assistant by typing your questions into the chat interface.
 
-2. The system will load the CSV data and initialize the Gemini API-based question-answering pipeline. You can input natural language questions, and the system will respond with concise answers based on the data.
+## Example Questions
 
-## Example
+- "Hi"
+- "Who are you?"
+- "How many total rows and columns are there?"
 
-Given a CSV file `customers-100.csv`, you can ask:
+## License
 
-```text
-Which company does Sheryl Baxter work for?
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgements
+
+- Thanks to the Streamlit and LangChain communities for their amazing tools and resources.
 ```
 
-The system will retrieve relevant context from the CSV and provide an answer like:
+### Customizing the README
 
-```text
-Sheryl Baxter works for ABC Corporation.
-```
+- **Project Name**: Update the title if your project has a different name.
+- **GitHub Link**: Replace `https://github.com/yourusername/repository-name.git` with your actual repository link.
+- **Requirements**: Add any additional libraries or dependencies your project might need.
+- **Example Questions**: Feel free to modify the list of example questions based on your application's functionality.
 
-## Dependencies
-
-- Python 3.x
-- LangChain
-- FAISS
-- pandas
-- dotenv
-- requests
+This README provides a clear overview of your project and its usage, making it easier for others (or yourself in the future) to understand and utilize the application. Let me know if you need any further customization or details!
