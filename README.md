@@ -1,6 +1,4 @@
-# Streamlit CSV Analysis App
-
-Welcome to the **Streamlit CSV Analysis App**! This application allows users to upload CSV files and ask questions about their data, utilizing a language model to generate insightful responses.
+# Data analysis application with RAG and Langchain
 
 ## Features
 
