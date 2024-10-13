@@ -4,7 +4,6 @@
 
 - Upload a CSV file and interact with the data.
 - Ask questions about the uploaded CSV, such as total rows and columns, specific data queries, etc.
-- Receive default responses for common questions like "Hi" and "Who are you".
 - Chat interface for seamless interaction with the assistant.
 
 # Output:
